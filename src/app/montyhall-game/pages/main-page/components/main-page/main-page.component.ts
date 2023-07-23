@@ -39,7 +39,7 @@ export class MainPageComponent {
 
       setTimeout(() => {
         this.setGameOverResultObj();
-      }, 2000);
+      }, 1000);
     }
   }
   setGameOverResultObj() {
