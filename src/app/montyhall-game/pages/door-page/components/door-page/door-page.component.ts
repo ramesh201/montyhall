@@ -73,7 +73,9 @@ export class DoorPageComponent implements OnInit {
             this.simCountAdded = data == 0 ? false : true;
           },
           (error) => {
-            alert('Something wrong...Please check your code');
+            alert(
+              'Something wrong...Please check your code or WebAPI connection'
+            );
           }
         );
       } else {
