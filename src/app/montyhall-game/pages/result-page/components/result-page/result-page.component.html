@@ -1,1 +1,10 @@
-<p>result-page works!</p>
+<div class="p-2 flex-fill col-sm-4">
+  <div class="d-flex">
+    <div class="p-2 flex-fill">
+      <span type="button" [ngClass]="resultColor">
+        {{ finalResult.type }}
+        <span class="badge badge-light">{{ finalResult.times }}</span>
+      </span>
+    </div>
+  </div>
+</div>

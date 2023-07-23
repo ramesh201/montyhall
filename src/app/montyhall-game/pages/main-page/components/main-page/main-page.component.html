@@ -1,1 +1,21 @@
-<p>main-page works!</p>
+<div class="container">
+  <div class="d-flex">
+    <div class="p-2 flex-fill">
+      <app-door-page (finalResult)="GetFinalResultData($event)">
+      </app-door-page>
+    </div>
+  </div>
+
+  <div class="d-flex row">
+    <div class="p-2 flex-fill col-sm-8">
+      <app-result-page
+        [isWin]="true"
+        [finalResult]="finalResultObj.wins"
+      ></app-result-page>
+      <app-result-page
+        [isWin]="false"
+        [finalResult]="finalResultObj.losses"
+      ></app-result-page>
+    </div>
+  </div>
+</div>

@@ -1,1 +1,105 @@
-<p>door-page works!</p>
+<div class="container">
+  <div class="d-flex">
+    <div
+      class="p-2 col-sm-2"
+      *ngFor="let door of noOfDoors; let i = index"
+      [attr.data-index]="i"
+    >
+      <mat-card class="door-card" style="float: left">
+        <img
+          style="width: 100%; height: 50%"
+          mat-card-image
+          [src]="door.imagePath"
+          [alt]="door.icon"
+          (click)="doorOpenAction(door, i)"
+        />
+      </mat-card>
+    </div>
+
+    <div class="col-sm-6">
+      <div class="p-2 flex" style="margin-top: 10px">
+        <form class="g-3" *ngIf="!simCountAdded">
+          <div class="col-auto">
+            <label for="staticEmail2" class="visually-hidden">Email</label>
+            <input
+              type="text"
+              name="simCount"
+              class="form-control-plaintext"
+              id="staticEmail2"
+              placeholder="Click on this to enter No. of rounds"
+              [(ngModel)]="simulationCount"
+              style="
+                border-color: blue;
+                color: white;
+                background-color: burlywood;
+              "
+            />
+          </div>
+
+          <div class="col-auto">
+            <button
+              type="submit"
+              class="btn btn-primary mb-3"
+              (click)="setSimulations(simulationCount)"
+            >
+              Set It
+            </button>
+          </div>
+        </form>
+
+        <div
+          class="row g-3"
+          style="margin-top: 10px"
+          *ngIf="simulationCount > 0 && simCountAdded"
+        >
+          <div style="color: white">Remaining Simulations</div>
+          <div class="col-auto">
+            <input
+              class="form-control"
+              type="text"
+              name="simCountDisabled"
+              placeholder=""
+              aria-label="Disabled input example"
+              disabled
+              [(ngModel)]="simulationCount"
+            />
+          </div>
+          <div class="col-auto" *ngIf="!doorOpened" style="visibility: hidden">
+            <button
+              type="button"
+              class="btn btn-primary mb-3"
+              (click)="doorOpenAction()"
+            >
+              Open Door
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="row g-3"
+          style="margin-top: 10px; visibility: hidden"
+          *ngIf="doorOpened"
+        >
+          <div class="col-auto col-sm-2">
+            <button
+              type="button"
+              class="btn btn-primary mb-3"
+              (click)="doorOpenAction('stay')"
+            >
+              Stay
+            </button>
+          </div>
+          <div class="col-auto col-sm-2">
+            <button
+              type="button"
+              class="btn btn-primary mb-3"
+              (click)="doorOpenAction('switch')"
+            >
+              Switch
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
