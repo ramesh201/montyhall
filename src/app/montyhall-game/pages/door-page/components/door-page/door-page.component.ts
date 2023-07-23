@@ -1,11 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  inject,
-} from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, inject } from '@angular/core';
 import { environment as env } from 'src/app/environments/environment';
 import { DoorPageService } from '../../services/door-page.service';
 
@@ -15,13 +8,7 @@ import { DoorPageService } from '../../services/door-page.service';
   styleUrls: ['./door-page.component.scss'],
 })
 export class DoorPageComponent implements OnInit {
-  @Input() myinputMsg: string | undefined;
-  @Input() imgPath: string = './assets/images/door.jpeg';
-  @Output() myOutput: EventEmitter<string> = new EventEmitter();
-  outputMessage: string = 'I am child component.';
-  @Output() result: EventEmitter<boolean> = new EventEmitter();
   @Output() finalResult: EventEmitter<any> = new EventEmitter();
-  @Output() gameOver: EventEmitter<boolean> = new EventEmitter();
   simulationCount!: any | undefined;
   simCountAdded: boolean = false;
   doorOpened: boolean = false;
@@ -78,16 +65,22 @@ export class DoorPageComponent implements OnInit {
       typeof count == 'number'
     ) {
       count = !count ? 0 : count;
-      this.service.setSimulations(count).subscribe(
-        (data) => {
-          this.totalRounds = this.totalRounds == 0 ? data : this.totalRounds;
-          this.simulationCount = data == 0 ? null : data;
-          this.simCountAdded = data == 0 ? false : true;
-        },
-        (error) => {
-          alert('Something wrong...Please check your code');
-        }
-      );
+      if (env.connectedWithAPI) {
+        this.service.setSimulations(count).subscribe(
+          (data) => {
+            this.totalRounds = this.totalRounds == 0 ? data : this.totalRounds;
+            this.simulationCount = data == 0 ? null : data;
+            this.simCountAdded = data == 0 ? false : true;
+          },
+          (error) => {
+            alert('Something wrong...Please check your code');
+          }
+        );
+      } else {
+        this.totalRounds = count;
+        this.simulationCount = count == 0 ? null : count;
+        this.simCountAdded = count == 0 ? false : true;
+      }
     } else alert('Enter valid simulation count');
   }
 
@@ -128,7 +121,6 @@ export class DoorPageComponent implements OnInit {
       case 'switch':
         this.simulationCount -= 1;
         this.checkingTheFinalResult(this.goatAppearedIdx[0], index);
-
         break;
       default:
         break;
@@ -144,7 +136,6 @@ export class DoorPageComponent implements OnInit {
           this.noOfDoors[newShuffled[0].id].imagePath =
             './assets/images/goat5.jpeg';
           this.noOfDoors[newShuffled[0].id].icon = 'goat';
-          this.goatAppearedIdx.push(newShuffled[0].id);
         },
         (error: any) => {
           alert(error.error.message);
@@ -154,8 +145,8 @@ export class DoorPageComponent implements OnInit {
       newShuffled = this.shuffle(this.noOfDoors.filter((f) => f.id != index));
       newShuffled[0].imagePath = './assets/images/goat5.jpeg';
       newShuffled[0].icon = 'goat';
-      this.goatAppearedIdx.push(newShuffled[0].id);
     }
+    this.goatAppearedIdx.push(newShuffled[0].id);
   }
 
   checkingTheFinalResult(goatIdx: number, clickedIdx: number): any[] {

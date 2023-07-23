@@ -1,6 +1,5 @@
 import { Component, Input, inject } from '@angular/core';
 import { MainPageService } from '../../services/main-page.service';
-import { DefaultFinalResult } from 'src/app/montyhall-game/common/datasets/default-door-list';
 
 @Component({
   selector: 'app-main-page',
@@ -16,7 +15,6 @@ export class MainPageComponent {
 
   green: string = 'btn btn-success';
   red: string = 'btn btn-danger';
-  myInputMessage: string = "I'm Parent";
   simulationCountNotSet: boolean = true;
   finalResultObj: any = {
     wins: { type: 'Wins', times: 0, percentage: 0 },
