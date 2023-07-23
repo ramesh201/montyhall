@@ -138,6 +138,7 @@ export class DoorPageComponent implements OnInit {
           this.noOfDoors[newShuffled[0].id].imagePath =
             './assets/images/goat5.jpeg';
           this.noOfDoors[newShuffled[0].id].icon = 'goat';
+          this.goatAppearedIdx.push(newShuffled[0].id);
         },
         (error: any) => {
           alert(error.error.message);
@@ -147,8 +148,8 @@ export class DoorPageComponent implements OnInit {
       newShuffled = this.shuffle(this.noOfDoors.filter((f) => f.id != index));
       newShuffled[0].imagePath = './assets/images/goat5.jpeg';
       newShuffled[0].icon = 'goat';
+      this.goatAppearedIdx.push(newShuffled[0].id);
     }
-    this.goatAppearedIdx.push(newShuffled[0].id);
   }
 
   checkingTheFinalResult(goatIdx: number, clickedIdx: number): any[] {
