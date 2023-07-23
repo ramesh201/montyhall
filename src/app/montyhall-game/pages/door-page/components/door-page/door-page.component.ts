@@ -204,6 +204,6 @@ export class DoorPageComponent implements OnInit {
       this.noOfDoors = this.setDefaultImages();
       if (!this.simulationCount)
         this.finalResultObj = this.setDefaultFinalResultObj();
-    }, 2000);
+    }, 1000);
   }
 }
