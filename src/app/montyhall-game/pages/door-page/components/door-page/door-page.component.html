@@ -32,6 +32,7 @@
                 color: white;
                 background-color: burlywood;
               "
+              *ngIf="!simCountAdded"
             />
           </div>
 
@@ -41,7 +42,7 @@
               class="btn btn-primary mb-3"
               (click)="setSimulations(simulationCount)"
             >
-              Set It
+              Set Rounds
             </button>
           </div>
         </form>
@@ -62,40 +63,6 @@
               disabled
               [(ngModel)]="simulationCount"
             />
-          </div>
-          <div class="col-auto" *ngIf="!doorOpened" style="visibility: hidden">
-            <button
-              type="button"
-              class="btn btn-primary mb-3"
-              (click)="doorOpenAction()"
-            >
-              Open Door
-            </button>
-          </div>
-        </div>
-
-        <div
-          class="row g-3"
-          style="margin-top: 10px; visibility: hidden"
-          *ngIf="doorOpened"
-        >
-          <div class="col-auto col-sm-2">
-            <button
-              type="button"
-              class="btn btn-primary mb-3"
-              (click)="doorOpenAction('stay')"
-            >
-              Stay
-            </button>
-          </div>
-          <div class="col-auto col-sm-2">
-            <button
-              type="button"
-              class="btn btn-primary mb-3"
-              (click)="doorOpenAction('switch')"
-            >
-              Switch
-            </button>
           </div>
         </div>
       </div>
