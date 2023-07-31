@@ -13,20 +13,20 @@ import {
 export class DoorPageService {
   constructor(private http: HttpClient) {}
 
-  setSimulations(count: number): Observable<any> {
-    return this.http.put<any>(env.apiUrl + addSimulations(count), count);
+  setSimulations(count: number) {
+    return this.http.post<any>(env.apiUrl + addSimulations(count), count);
   }
 
-  checkingTheFinalResult(objArr: any[], goatIdx: number): Observable<any> {
+  firstTimeShuffleToGetGoat(objArr: any[], idx: number) {
     return this.http.put<any>(
-      env.apiUrl + checkingTheFinalResult(goatIdx),
+      env.apiUrl + firstTimeShuffleToGetGoat(idx),
       objArr
     );
   }
 
-  firstTimeShuffleToGetGoat(objArr: any[], idx: number): Observable<any> {
+  checkingTheFinalResult(objArr: any[], goatIdx: number) {
     return this.http.put<any>(
-      env.apiUrl + firstTimeShuffleToGetGoat(idx),
+      env.apiUrl + checkingTheFinalResult(goatIdx),
       objArr
     );
   }

@@ -15,11 +15,12 @@ export class DoorPageComponent implements OnInit {
   service = inject(DoorPageService);
   clickedIndexes: number[] = [];
   goatAppearedIdx: number[] = [];
-  currentIdx = 0;
   actionDone: boolean = false;
   noOfDoors: any[] = this.setDefaultImages();
   totalRounds: number = 0;
   isGameOver: boolean = false;
+  revertedFinalResult: boolean = false;
+
   constructor() {}
 
   finalResultObj = this.setDefaultFinalResultObj();
@@ -41,24 +42,24 @@ export class DoorPageComponent implements OnInit {
   ngOnInit() {}
 
   shuffle(array: any[]) {
-    var m = array.length,
-      t,
-      i;
+    var arrayLength = array.length,
+      temp,
+      remainingEleemnt;
 
-    while (m) {
+    while (arrayLength) {
       // Pick a remaining element…
-      i = Math.floor(Math.random() * m--);
+      remainingEleemnt = Math.floor(Math.random() * arrayLength--);
 
       // And swap it with the current element.
-      t = array[m];
-      array[m] = array[i];
-      array[i] = t;
+      temp = array[arrayLength];
+      array[arrayLength] = array[remainingEleemnt];
+      array[remainingEleemnt] = temp;
     }
 
     return array;
   }
 
-  setSimulations(count: any): any {
+  async setSimulations(count: any) {
     if (
       (count && count != 0) ||
       (!count && this.actionDone) ||
@@ -66,18 +67,7 @@ export class DoorPageComponent implements OnInit {
     ) {
       count = !count ? 0 : count;
       if (env.connectedWithAPI) {
-        this.service.setSimulations(count).subscribe(
-          (data) => {
-            this.totalRounds = this.totalRounds == 0 ? data : this.totalRounds;
-            this.simulationCount = data == 0 ? null : data;
-            this.simCountAdded = data == 0 ? false : true;
-          },
-          (error) => {
-            alert(
-              'Something wrong...Please check your code or WebAPI connection'
-            );
-          }
-        );
+        await this.setSimulationFromWebAPI(count);
       } else {
         this.totalRounds = count;
         this.simulationCount = count == 0 ? null : count;
@@ -85,10 +75,29 @@ export class DoorPageComponent implements OnInit {
       }
     } else alert('Enter valid simulation count');
   }
+  setSimulationFromWebAPI(count: any) {
+    return new Promise<void>((resolve, reject) => {
+      this.service.setSimulations(count).subscribe({
+        next: (data: any) => {
+          this.totalRounds = this.totalRounds == 0 ? data : this.totalRounds;
+          this.simulationCount = data == 0 ? null : data;
+          this.simCountAdded = data == 0 ? false : true;
+          resolve();
+        },
+        error: (err: any) => {
+          alert(
+            'Something wrong...Please check your code or WebAPI connection'
+          );
+          reject(err);
+        },
+        complete: () => {
+          console.log('complete');
+        },
+      });
+    });
+  }
 
   doorOpenAction(door: any = {}, index: number = 0) {
-    this.currentIdx = index;
-
     if (
       (!this.simulationCount && !this.simCountAdded) ||
       (this.simulationCount && !this.simCountAdded)
@@ -129,21 +138,10 @@ export class DoorPageComponent implements OnInit {
     }
   }
 
-  firstTimeShuffleToGetGoat(index: number) {
+  async firstTimeShuffleToGetGoat(index: number) {
     var newShuffled: any[] = [];
     if (env.connectedWithAPI) {
-      this.service.firstTimeShuffleToGetGoat(this.noOfDoors, index).subscribe(
-        (data: any) => {
-          newShuffled = data;
-          this.noOfDoors[newShuffled[0].id].imagePath =
-            './assets/images/goat5.jpeg';
-          this.noOfDoors[newShuffled[0].id].icon = 'goat';
-          this.goatAppearedIdx.push(newShuffled[0].id);
-        },
-        (error: any) => {
-          alert(error.error.message);
-        }
-      );
+      await this.firstTimeShuffleToGetGoatFromWebAPI(index);
     } else {
       newShuffled = this.shuffle(this.noOfDoors.filter((f) => f.id != index));
       newShuffled[0].imagePath = './assets/images/goat5.jpeg';
@@ -152,18 +150,39 @@ export class DoorPageComponent implements OnInit {
     }
   }
 
-  checkingTheFinalResult(goatIdx: number, clickedIdx: number): any[] {
+  firstTimeShuffleToGetGoatFromWebAPI(index: number) {
+    var newShuffled: any[] = [];
+    return new Promise<void>((resolve, reject) => {
+      this.service.firstTimeShuffleToGetGoat(this.noOfDoors, index).subscribe({
+        next: (data: any) => {
+          if (data.length == 0) {
+            this.doorOpened = false;
+            alert('Invalid request');
+          } else {
+            newShuffled = data;
+            this.noOfDoors[newShuffled[0].id].imagePath =
+              './assets/images/goat5.jpeg';
+            this.noOfDoors[newShuffled[0].id].icon = 'goat';
+            this.goatAppearedIdx.push(newShuffled[0].id);
+          }
+          resolve();
+        },
+        error: (error: any) => {
+          alert(error.error.message);
+          reject(error);
+        },
+        complete: () => {
+          console.log('complete');
+        },
+      });
+    });
+  }
+
+  async checkingTheFinalResult(goatIdx: number, clickedIdx: number) {
     var newShuffled: any[] = [{ id: 0, icon: '', imagePath: '' }];
     if (env.connectedWithAPI) {
-      this.service.checkingTheFinalResult(this.noOfDoors, goatIdx).subscribe(
-        (data: any) => {
-          this.noOfDoors = data;
-          this.stayOrSwitchActionsRest(clickedIdx);
-        },
-        (error: any) => {
-          alert(error.error.message);
-        }
-      );
+      await this.checkingTheFinalResultFromWebAPI(goatIdx);
+      if (!this.revertedFinalResult) this.stayOrSwitchActionsRest(clickedIdx);
     } else {
       newShuffled = this.shuffle(this.noOfDoors.filter((f) => f.id != goatIdx));
       newShuffled[0].imagePath = './assets/images/goat5.jpeg';
@@ -176,6 +195,31 @@ export class DoorPageComponent implements OnInit {
     }
 
     return newShuffled;
+  }
+
+  checkingTheFinalResultFromWebAPI(index: number) {
+    return new Promise<void>((resolve, reject) => {
+      this.service.checkingTheFinalResult(this.noOfDoors, index).subscribe({
+        next: (data: any) => {
+          if (data.length == 0) {
+            this.simulationCount += 1;
+            this.revertedFinalResult = true;
+            alert('Invalid request');
+          } else {
+            this.revertedFinalResult = false;
+            this.noOfDoors = data;
+          }
+          resolve();
+        },
+        error: (error: any) => {
+          alert(error.error.message);
+          reject(error);
+        },
+        complete: () => {
+          console.log('complete');
+        },
+      });
+    });
   }
 
   stayOrSwitchActionsRest(index: number) {

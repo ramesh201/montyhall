@@ -19,7 +19,7 @@ export class ResultPageComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
-    if (this.isWin) this.resultColor = 'btn btn-success';
-    else this.resultColor = 'btn btn-danger';
+    if (this.isWin) this.resultColor = 'btn btn-success w-50';
+    else this.resultColor = 'btn btn-danger w-50';
   }
 }
